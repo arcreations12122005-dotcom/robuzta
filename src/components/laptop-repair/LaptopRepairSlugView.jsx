@@ -1,0 +1,778 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import {
+  ShieldCheck,
+  Zap,
+  CheckCircle2,
+  Phone,
+  Calendar,
+  ChevronDown,
+  ArrowRight,
+  Sparkles,
+  Wrench,
+  Clock,
+  ChevronRight,
+  Check,
+  AlertTriangle,
+  HelpCircle,
+  Cpu,
+  Monitor,
+  Battery,
+  Keyboard,
+  HardDrive,
+  Droplets,
+  Award,
+  FileText,
+  Activity,
+  Layers,
+  ArrowUpRight,
+  XCircle,
+  ThumbsUp,
+  Flame,
+  Search,
+  Laptop,
+  Database
+} from 'lucide-react';
+
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import { siteConfig } from '@/data/site';
+import { LAPTOP_BRANDS, LAPTOP_PROBLEMS } from '@/data/laptopRepairData';
+import { useBookingModal } from '@/context/BookingModalContext';
+import { WhatsappIcon } from '@/components/icons/WhatsappIcon';
+
+// Problem Icons Mapping for Visual Consistency
+const problemIconMap = {
+  'motherboard-repair': Cpu,
+  'screen-replacement': Monitor,
+  'battery-replacement': Battery,
+  'keyboard-replacement': Keyboard,
+  'body-panel-repair': Layers,
+  'charging-port-repair': Zap,
+  'ram-ssd-upgrade': HardDrive,
+  'fan-repair': Flame,
+  'liquid-damage-repair': Droplets
+};
+
+export function LaptopRepairSlugView({ data }) {
+  const { openModal } = useBookingModal();
+  const [activeFaq, setActiveFaq] = useState(0);
+
+  if (!data) return null;
+
+  const isBrand = data.entityType === 'brand' || Boolean(data.supportedModels);
+  const pageTitle = isBrand ? `${data.name} Laptop Repair` : data.name;
+  const canonicalUrl = `https://robuzta.com/laptop-repair/${data.slug}/`;
+
+  // JSON-LD Schemas
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://robuzta.com'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Laptop Repair',
+        item: 'https://robuzta.com/laptop-repair/'
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: pageTitle,
+        item: canonicalUrl
+      }
+    ]
+  };
+
+  const serviceSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: data.h1,
+    provider: {
+      '@type': 'LocalBusiness',
+      name: 'Robuzta Techlabs',
+      telephone: siteConfig.phone,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Ahmedabad',
+        addressRegion: 'Gujarat',
+        addressCountry: 'IN'
+      }
+    }
+  };
+
+  const faqSchema = data.faqs && data.faqs.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: data.faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer
+      }
+    }))
+  } : null;
+
+  // Dedicated 100% PDF-Exact View for MacBook
+  if (data.slug === 'macbook') {
+    return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+        />
+        {faqSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+          />
+        )}
+
+        <Header />
+
+        <main id="main-content" className="min-h-screen bg-white dark:bg-[#070E1A] text-slate-900 dark:text-white pt-20">
+          
+          {/* SECTION 1 — HERO */}
+          <section className="relative overflow-hidden py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-slate-50/90 via-white to-slate-50/40 dark:from-[#070E1A] dark:via-[#0b1628] dark:to-[#070E1A] border-b border-slate-200 dark:border-slate-800">
+            <div className="pointer-events-none absolute top-10 left-1/4 -translate-x-1/2 w-[550px] h-[550px] bg-[#0E7C7B]/15 dark:bg-[#0E7C7B]/25 rounded-full blur-[140px]" />
+            <div className="pointer-events-none absolute bottom-10 right-10 w-[400px] h-[400px] bg-blue-600/10 dark:bg-cyan-500/15 rounded-full blur-[120px]" />
+
+            <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+                
+                {/* Left Side (as it is) */}
+                <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-[#0E7C7B]/10 dark:bg-[#0E7C7B]/20 border border-[#0E7C7B]/30 px-4 py-1.5 text-xs font-black uppercase tracking-wider text-[#0E7C7B] dark:text-teal-300">
+                    <Sparkles size={14} className="text-[#0E7C7B] dark:text-teal-400" />
+                    <span>Certified Apple MacBook Diagnostics & Repair</span>
+                  </div>
+
+                  <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
+                    {data.h1}
+                  </h1>
+
+                  <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-2xl">
+                    {data.tagline}
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
+                    <button
+                      type="button"
+                      onClick={openModal}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-[#0E7C7B] hover:bg-teal-600 text-white px-8 py-4 text-sm font-black shadow-xl shadow-[#0E7C7B]/30 hover:scale-[1.02] transition-all cursor-pointer"
+                    >
+                      <Calendar size={18} />
+                      <span>Book Diagnosis</span>
+                    </button>
+
+                    <a
+                      href={siteConfig.whatsappHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white px-7 py-4 text-sm font-bold shadow-lg transition-all"
+                    >
+                      <WhatsappIcon size={18} className="text-white" />
+                      <span>Request Quote</span>
+                    </a>
+
+                    <a
+                      href={siteConfig.phoneHref}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-6 py-4 text-sm font-bold text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                    >
+                      <Phone size={17} className="text-[#0E7C7B] dark:text-teal-400" />
+                      <span>Call</span>
+                    </a>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-center lg:justify-start gap-5 pt-3 text-xs font-extrabold text-slate-600 dark:text-slate-400 border-t border-slate-200/80 dark:border-slate-800/80">
+                    <span className="flex items-center gap-1.5">
+                      <CheckCircle2 size={16} className="text-emerald-500" />
+                      10000+ Devices Repaired
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Zap size={16} className="text-amber-500" />
+                      Same-Day Repairs Available
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <ShieldCheck size={16} className="text-[#0E7C7B] dark:text-teal-400" />
+                      No Fix, No Fee Policy
+                    </span>
+                  </div>
+                </div>
+
+                {/* Right Side Brand Logo */}
+                <div className="lg:col-span-5 flex justify-center">
+                  <div className="w-full max-w-sm sm:max-w-md rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl p-8 sm:p-10 shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group">
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-[#0E7C7B]/10 via-transparent to-cyan-500/10 dark:from-[#0E7C7B]/20 dark:to-teal-500/10 rounded-3xl blur-2xl" />
+                    <div className="relative z-10 w-full flex items-center justify-center min-h-[200px] sm:min-h-[240px]">
+                      <img
+                        src={data.logoImage}
+                        alt={`${data.name} logo`}
+                        className="max-h-40 sm:max-h-52 w-auto max-w-[220px] sm:max-w-[280px] object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-md dark:invert dark:brightness-200"
+                      />
+                    </div>
+                    <div className="relative z-10 mt-5 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/60 text-xs font-bold text-slate-700 dark:text-slate-300">
+                      <CheckCircle2 size={15} className="text-[#0E7C7B] dark:text-teal-400" />
+                      <span>Certified Apple Care & Lab Diagnostics</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </section>
+
+          {/* SECTION 2 — COMMON PROBLEMS & SOLUTIONS (8 PDF ITEMS) */}
+          <section className="py-14 sm:py-20 bg-white dark:bg-[#070E1A] border-b border-slate-200 dark:border-slate-800">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-10">
+              <div className="text-center max-w-3xl mx-auto space-y-2">
+                <span className="text-xs font-black uppercase tracking-widest text-[#0E7C7B] dark:text-teal-400">
+                  COMMON PROBLEMS & SOLUTIONS
+                </span>
+                <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">
+                  MacBook Repair in Ahmedabad: Common Problems & Solutions
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {data.commonProblems.map((prob, idx) => {
+                  const ProbIcon = problemIconMap[prob.slug] || Wrench;
+                  return (
+                    <div
+                      key={idx}
+                      className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 p-6 sm:p-7 space-y-3 shadow-md hover:border-[#0E7C7B] transition-all"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="h-11 w-11 rounded-2xl bg-[#0E7C7B]/10 dark:bg-[#0E7C7B]/20 text-[#0E7C7B] dark:text-teal-400 flex items-center justify-center font-black shrink-0">
+                          <ProbIcon size={22} />
+                        </div>
+                        <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                          {prob.title}
+                        </h3>
+                      </div>
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                        {prob.description}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          {/* SECTION 3 — MACBOOK REPAIR SERVICES IN AHMEDABAD (10 PDF ITEMS IN RICH CARDS) */}
+          <section className="py-14 sm:py-20 bg-slate-50/60 dark:bg-[#0b1628] border-b border-slate-200 dark:border-slate-800">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-10">
+              <div className="text-center max-w-3xl mx-auto space-y-3">
+                <span className="text-xs font-black uppercase tracking-widest text-[#0E7C7B] dark:text-teal-400">
+                  OUR SERVICES
+                </span>
+                <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">
+                  MacBook Repair Services in Ahmedabad
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                  At <strong className="font-bold text-slate-900 dark:text-white">Robuzta TechLabs</strong>, we provide professional MacBook diagnostics and repair for supported <strong className="font-bold text-slate-900 dark:text-white">MacBook Air and MacBook Pro</strong> models.
+                </p>
+              </div>
+
+              <div className="max-w-6xl mx-auto space-y-6">
+                <span className="text-xs font-black uppercase tracking-widest text-[#0E7C7B] dark:text-teal-400 text-center block">
+                  Our services include:
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                  {[
+                    { title: 'Screen & Display Repair', icon: Monitor, tag: 'Retina Display' },
+                    { title: 'Battery Replacement', icon: Battery, tag: 'OEM Battery' },
+                    { title: 'Charging Port Repair', icon: Zap, tag: 'USB-C / MagSafe' },
+                    { title: 'Keyboard & Trackpad Repair', icon: Keyboard, tag: 'Trackpad & Keys' },
+                    { title: 'Liquid Damage Diagnosis', icon: Droplets, tag: 'Liquid Recovery' },
+                    { title: 'Logic Board Repair', icon: Cpu, tag: 'Micro-Soldering' },
+                    { title: 'SSD & Storage Solutions', icon: HardDrive, tag: 'Storage & SSD' },
+                    { title: 'macOS Troubleshooting', icon: Laptop, tag: 'macOS OS Fix' },
+                    { title: 'MacBook Cleaning & Thermal Service', icon: Flame, tag: 'Thermal Service' },
+                    { title: 'Data Recovery', icon: Database, tag: 'Data Extraction' }
+                  ].map((srv, idx) => {
+                    const IconComp = srv.icon;
+                    return (
+                      <motion.div
+                        key={idx}
+                        whileHover={{ y: -5 }}
+                        className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 text-center shadow-md hover:border-[#0E7C7B] hover:shadow-xl transition-all space-y-3 flex flex-col justify-between group"
+                      >
+                        <div className="space-y-3">
+                          <div className="h-12 w-12 rounded-2xl bg-[#0E7C7B]/10 text-[#0E7C7B] dark:text-teal-300 flex items-center justify-center mx-auto group-hover:scale-110 group-hover:bg-[#0E7C7B] group-hover:text-white transition-all shadow-sm">
+                            <IconComp size={22} />
+                          </div>
+                          <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white group-hover:text-[#0E7C7B] dark:group-hover:text-teal-400 transition-colors leading-snug">
+                            {srv.title}
+                          </h3>
+                        </div>
+
+                        <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-center gap-1 text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400">
+                          <CheckCircle2 size={13} className="text-emerald-500 shrink-0" />
+                          <span>{srv.tag}</span>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* SECTION 4 — FAQ (5 PDF ITEMS) */}
+          {data.faqs && data.faqs.length > 0 && (
+            <section className="py-14 sm:py-20 bg-white dark:bg-[#070E1A] border-b border-slate-200 dark:border-slate-800">
+              <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-8">
+                <div className="text-center space-y-2">
+                  <span className="text-xs font-black uppercase tracking-widest text-[#0E7C7B] dark:text-teal-400">
+                    FREQUENTLY ASKED QUESTIONS
+                  </span>
+                  <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">
+                    FAQ
+                  </h2>
+                </div>
+
+                <div className="space-y-4">
+                  {data.faqs.map((faq, idx) => {
+                    const isOpen = activeFaq === idx;
+                    return (
+                      <div
+                        key={faq.question}
+                        className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/90 overflow-hidden shadow-sm transition-all"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setActiveFaq(isOpen ? -1 : idx)}
+                          aria-expanded={isOpen}
+                          className="flex w-full items-center justify-between p-6 text-left font-bold text-slate-900 dark:text-white hover:text-[#0E7C7B] dark:hover:text-teal-300 transition-colors cursor-pointer"
+                        >
+                          <span className="text-sm sm:text-base pr-4">{faq.question}</span>
+                          <ChevronDown
+                            size={20}
+                            className={`shrink-0 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#0E7C7B]' : ''}`}
+                          />
+                        </button>
+                        {isOpen && (
+                          <div
+                            className="px-6 pb-6 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/80 pt-4"
+                          >
+                            {faq.answer}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* SECTION 5 — BOTTOM CTA BANNER */}
+          <section className="py-14 bg-gradient-to-r from-[#0E7C7B] via-teal-700 to-slate-900 text-white">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
+              <h2 className="text-2xl sm:text-4xl font-black tracking-tight">
+                Ready to Fix Your MacBook?
+              </h2>
+              <p className="max-w-2xl mx-auto text-sm sm:text-base text-teal-100 font-medium">
+                Visit our lab in South Bopal / Tragad, Ahmedabad or request doorstep pickup. Limited Warranty, transparent quote approval & zero data risk.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                <button
+                  type="button"
+                  onClick={openModal}
+                  className="w-full sm:w-auto rounded-2xl bg-white text-[#0E7C7B] hover:bg-slate-100 px-8 py-4 text-sm font-black shadow-xl hover:scale-105 transition-all cursor-pointer"
+                >
+                  Book Bench Diagnosis Now
+                </button>
+                <a
+                  href={siteConfig.phoneHref}
+                  className="w-full sm:w-auto rounded-2xl bg-slate-900/80 hover:bg-slate-900 border border-slate-700 px-8 py-4 text-sm font-bold text-white transition-all"
+                >
+                  Call: {siteConfig.phone}
+                </a>
+              </div>
+            </div>
+          </section>
+
+        </main>
+
+        <Footer />
+      </>
+    );
+  }
+
+  return (
+    <>
+      {/* Structured Data Scripts */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
+      {data.faqs && data.faqs.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
+
+      <Header />
+
+      <main id="main-content" className="min-h-screen bg-white dark:bg-[#070E1A] text-slate-900 dark:text-white pt-20">
+        
+        {/* SECTION 1 — HERO & VISUAL DIAGNOSTIC SUMMARY */}
+        <section className="relative overflow-hidden py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-slate-50/90 via-white to-slate-50/40 dark:from-[#070E1A] dark:via-[#0b1628] dark:to-[#070E1A] border-b border-slate-200 dark:border-slate-800">
+          <div className="pointer-events-none absolute top-10 left-1/4 -translate-x-1/2 w-[550px] h-[550px] bg-[#0E7C7B]/15 dark:bg-[#0E7C7B]/25 rounded-full blur-[140px]" />
+          <div className="pointer-events-none absolute bottom-10 right-10 w-[400px] h-[400px] bg-blue-600/10 dark:bg-cyan-500/15 rounded-full blur-[120px]" />
+
+          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+              
+              <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 rounded-full bg-[#0E7C7B]/10 dark:bg-[#0E7C7B]/20 border border-[#0E7C7B]/30 px-4 py-1.5 text-xs font-black uppercase tracking-wider text-[#0E7C7B] dark:text-teal-300">
+                  <Sparkles size={14} className="text-[#0E7C7B] dark:text-teal-400" />
+                  <span>{isBrand ? `Certified ${data.name} Lab Care` : `Chip-level Diagnostics`}</span>
+                </div>
+
+                <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
+                  {data.h1}
+                </h1>
+
+                <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-2xl">
+                  {data.tagline}
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={openModal}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-[#0E7C7B] hover:bg-teal-600 text-white px-8 py-4 text-sm font-black shadow-xl shadow-[#0E7C7B]/30 hover:scale-[1.02] transition-all cursor-pointer"
+                  >
+                    <Calendar size={18} />
+                    <span>Book Diagnosis</span>
+                  </button>
+
+                  <a
+                    href={siteConfig.whatsappHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white px-7 py-4 text-sm font-bold shadow-lg transition-all"
+                  >
+                    <WhatsappIcon size={18} className="text-white" />
+                    <span>Request Quote</span>
+                  </a>
+
+                  <a
+                    href={siteConfig.phoneHref}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-6 py-4 text-sm font-bold text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                  >
+                    <Phone size={17} className="text-[#0E7C7B] dark:text-teal-400" />
+                    <span>Call</span>
+                  </a>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-5 pt-3 text-xs font-extrabold text-slate-600 dark:text-slate-400 border-t border-slate-200/80 dark:border-slate-800/80">
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 size={16} className="text-emerald-500" />
+                    10000+ Devices Repaired
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Zap size={16} className="text-amber-500" />
+                    Same-Day Repairs Available
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <ShieldCheck size={16} className="text-[#0E7C7B] dark:text-teal-400" />
+                    No Fix, No Fee Policy
+                  </span>
+                </div>
+
+              </div>
+
+              <div className="lg:col-span-5 flex justify-center">
+                {isBrand ? (
+                  <div className="w-full max-w-sm sm:max-w-md rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl p-8 sm:p-10 shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group">
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-[#0E7C7B]/10 via-transparent to-cyan-500/10 dark:from-[#0E7C7B]/20 dark:to-teal-500/10 rounded-3xl blur-2xl" />
+                    <div className="relative z-10 w-full flex items-center justify-center min-h-[200px] sm:min-h-[240px]">
+                      <img
+                        src={data.logoImage}
+                        alt={`${data.name} logo`}
+                        className={`max-h-40 sm:max-h-52 w-auto max-w-[240px] sm:max-w-[320px] object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-md ${
+                          (data.slug === 'macbook' || data.slug === 'apple')
+                            ? 'dark:invert dark:brightness-200'
+                            : 'dark:brightness-110'
+                        }`}
+                      />
+                    </div>
+                    <div className="relative z-10 mt-5 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/60 text-xs font-bold text-slate-700 dark:text-slate-300">
+                      <CheckCircle2 size={15} className="text-[#0E7C7B] dark:text-teal-400" />
+                      <span>Certified {data.name} Care & Lab Diagnostics</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl p-6 sm:p-8 shadow-2xl space-y-6 w-full">
+                    
+                    <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+                      <div>
+                        <span className="text-[11px] font-mono font-black uppercase tracking-wider text-[#0E7C7B] dark:text-teal-400 block">
+                          LAB DIAGNOSTIC SPEC SHEET
+                        </span>
+                        <h2 className="text-lg font-black text-slate-900 dark:text-white mt-0.5">
+                          {data.problemTitle}
+                        </h2>
+                      </div>
+                      <div className="h-11 w-11 rounded-2xl bg-[#0E7C7B]/10 dark:bg-[#0E7C7B]/20 text-[#0E7C7B] dark:text-teal-400 flex items-center justify-center font-bold">
+                        <Wrench size={22} />
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/60">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block">Est. Repair Time</span>
+                          <span className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5 mt-1">
+                            <Clock size={14} className="text-[#0E7C7B] dark:text-teal-400" />
+                            2-3 hours
+                          </span>
+                        </div>
+                        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/60">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block">Price Estimate</span>
+                          <span className="text-sm font-black text-[#0E7C7B] dark:text-teal-400 font-mono mt-1 block">
+                            {data.priceEstimate ? data.priceEstimate : 'Upfront Quote'}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-[#0E7C7B]/10 dark:bg-[#0E7C7B]/20 border border-[#0E7C7B]/30 flex items-start gap-3">
+                        <Activity size={18} className="text-[#0E7C7B] dark:text-teal-400 shrink-0 mt-0.5" />
+                        <div className="text-xs text-slate-700 dark:text-slate-200">
+                          <strong className="font-black block text-slate-900 dark:text-white">Bench Testing Equipment:</strong>
+                          FLIR Thermal Imaging, BGA Optical Rework Station & Digital Multimeter Voltage Tracing.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400">
+                      <span>Location: South Bopal & Tragad</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-black">● Lab Open Now</span>
+                    </div>
+
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 2 — HARDWARE ISSUES & REPAIRS FOR THIS BRAND */}
+        <section className="py-16 sm:py-20 bg-white dark:bg-[#070E1A]">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-10">
+            <div className="text-center max-w-3xl mx-auto space-y-3">
+              <span className="text-xs font-black uppercase tracking-widest text-[#0E7C7B] dark:text-teal-400">
+                HARDWARE ISSUES & REPAIRS
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                {data.problemsTitle || `Common ${data.name} Hardware Issues We Fix`}
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300">
+                {data.problemsSubtitle || `Select any hardware issue below to see diagnostic procedures and book an immediate bench evaluation.`}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {(data.commonProblems || LAPTOP_PROBLEMS).map((prob, idx) => {
+                const ProbIcon = problemIconMap[prob.slug] || Wrench;
+                const itemTitle = prob.title || `${data.name} ${prob.name}`;
+                const itemDesc = prob.description || prob.tagline;
+                return (
+                  <div
+                    key={prob.title || prob.slug || idx}
+                    className="group flex flex-col justify-between rounded-3xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 p-5 sm:p-6 hover:border-[#0E7C7B] dark:hover:border-teal-500/80 hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="h-11 w-11 rounded-2xl bg-[#0E7C7B]/10 dark:bg-[#0E7C7B]/20 text-[#0E7C7B] dark:text-teal-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <ProbIcon size={20} />
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="text-base font-black text-slate-900 dark:text-white group-hover:text-[#0E7C7B] dark:group-hover:text-teal-300 transition-colors">
+                          {itemTitle}
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1 line-clamp-2">
+                          {itemDesc}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 mt-3 border-t border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between text-xs font-bold">
+                      <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-emerald-500" />
+                        <span>Genuine Parts &amp; Care</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={openModal}
+                        className="text-[#0E7C7B] dark:text-teal-400 hover:text-teal-600 dark:hover:text-teal-300 transition-colors flex items-center gap-1 font-black cursor-pointer"
+                      >
+                        <span>Book Repair</span>
+                        <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="text-center pt-2">
+              <button
+                type="button"
+                onClick={openModal}
+                className="inline-flex items-center gap-2 rounded-2xl bg-[#0E7C7B] hover:bg-teal-600 text-white px-7 py-3.5 text-xs font-black transition-all shadow-md hover:scale-[1.02] cursor-pointer"
+              >
+                <span>Request Diagnostic Quote for {data.name}</span>
+                <ArrowRight size={14} />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 3 — BRAND REPAIR CAPABILITIES & DETAILS */}
+        {data.brandHighlights && data.brandHighlights.length > 0 && (
+          <section className="py-14 sm:py-20 bg-slate-50/70 dark:bg-[#0b1628] border-b border-slate-200 dark:border-slate-800">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-10">
+              <div className="text-center max-w-3xl mx-auto space-y-3">
+                <span className="text-xs font-black uppercase tracking-widest text-[#0E7C7B] dark:text-teal-400">
+                  CHIP-LEVEL LAB DETAILS
+                </span>
+                <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">
+                  Why Choose Robuzta for Your {data.name} Repair
+                </h2>
+                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300">
+                  Dedicated schematics, genuine OEM parts, and certified chip-level workbench technicians in Ahmedabad.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {data.brandHighlights.map((hl, idx) => (
+                  <div
+                    key={idx}
+                    className="rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 space-y-3 shadow-sm hover:border-[#0E7C7B] dark:hover:border-teal-500/70 hover:shadow-lg transition-all group"
+                  >
+                    <div className="h-10 w-10 rounded-2xl bg-[#0E7C7B]/10 dark:bg-teal-500/10 text-[#0E7C7B] dark:text-teal-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <ShieldCheck size={20} />
+                    </div>
+                    <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 leading-relaxed">
+                      {hl}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {data.faqs && data.faqs.length > 0 && (
+          <section className="py-16 sm:py-20 bg-slate-50 dark:bg-[#0a1424] border-t border-slate-200 dark:border-slate-800">
+            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-10">
+              
+              <div className="text-center space-y-3">
+                <span className="text-xs font-black uppercase tracking-widest text-[#0E7C7B] dark:text-teal-400">
+                  REPAIR TRANSPARENCY
+                </span>
+                <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">
+                  Frequently Asked Questions
+                </h2>
+              </div>
+
+              <div className="space-y-4">
+                {data.faqs.map((faq, idx) => {
+                  const isOpen = activeFaq === idx;
+                  return (
+                    <div
+                      key={faq.question}
+                      className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 overflow-hidden shadow-sm transition-all"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setActiveFaq(isOpen ? -1 : idx)}
+                        aria-expanded={isOpen}
+                        aria-controls={`faq-answer-slug-${idx}`}
+                        className="flex w-full items-center justify-between p-6 text-left font-bold text-slate-900 dark:text-white hover:text-[#0E7C7B] dark:hover:text-teal-300 transition-colors cursor-pointer"
+                      >
+                        <span className="text-sm sm:text-base pr-4">{faq.question}</span>
+                        <ChevronDown
+                          size={20}
+                          className={`shrink-0 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#0E7C7B]' : ''}`}
+                        />
+                      </button>
+                      {isOpen && (
+                        <div
+                          id={`faq-answer-slug-${idx}`}
+                          className="px-6 pb-6 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/80 pt-4"
+                        >
+                          {faq.answer}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+            </div>
+          </section>
+        )}
+
+        <section className="py-14 bg-gradient-to-r from-[#0E7C7B] via-teal-700 to-slate-900 text-white">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tight">
+              Ready to Fix Your {data.name}?
+            </h2>
+            <p className="max-w-2xl mx-auto text-sm sm:text-base text-teal-100 font-medium">
+              Visit our lab in South Bopal / Tragad, Ahmedabad or request doorstep pickup. Limited Warranty, transparent quote approval & zero data risk.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+              <button
+                type="button"
+                onClick={openModal}
+                className="w-full sm:w-auto rounded-2xl bg-white text-[#0E7C7B] hover:bg-slate-100 px-8 py-4 text-sm font-black shadow-xl hover:scale-105 transition-all cursor-pointer"
+              >
+                Book Bench Diagnosis Now
+              </button>
+              <a
+                href={siteConfig.phoneHref}
+                className="w-full sm:w-auto rounded-2xl bg-slate-900/80 hover:bg-slate-900 border border-slate-700 px-8 py-4 text-sm font-bold text-white transition-all"
+              >
+                Call: {siteConfig.phone}
+              </a>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <Footer />
+    </>
+  );
+}
