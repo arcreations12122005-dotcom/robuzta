@@ -1,22 +1,22 @@
-import localFont from 'next/font/local';
+import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { BookingModalProvider } from '@/context/BookingModalContext';
 import { GlobalOverlays } from '@/components/layout/GlobalOverlays';
 import { getOrganizationSchema, getLocalBusinessSchema, getWebSiteSchema } from '@/lib/jsonLd';
 
-const inter = localFont({
-  src: '../fonts/Inter-Variable.woff2',
+const inter = Inter({
+  subsets: ['latin'],
   display: 'swap',
   variable: '--font-inter',
-  weight: '400 700',
+  weight: ['400', '500', '600', '700']
 });
 
-const spaceGrotesk = localFont({
-  src: '../fonts/SpaceGrotesk-Variable.woff2',
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
   display: 'swap',
   variable: '--font-space-grotesk',
-  weight: '600 700',
+  weight: ['600', '700']
 });
 
 export const metadata = {

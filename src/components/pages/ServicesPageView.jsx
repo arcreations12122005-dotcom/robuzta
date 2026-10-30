@@ -184,7 +184,6 @@ export function ServicesPageView() {
           </div>
         </section>
 
-
         {/* Diagnostic & Booking Banner */}
         <section className="py-16 bg-white dark:bg-slate-950">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
